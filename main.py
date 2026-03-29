@@ -33,4 +33,7 @@ def get_fibonacci(n: int):
     raise HTTPException(status_code=400, detail="nは1以上の整数を指定してください。")
   if n > 10000:
     raise HTTPException(status_code=400, detail="nは10000以下にしてください。")
-  return {"result": fibonacci(n)}
+  result = fibonacci(n)
+  if result == -1:
+    raise HTTPException(status_code=400, detail="不正な入力です。")
+  return {"result": result}

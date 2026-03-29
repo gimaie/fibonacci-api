@@ -1,6 +1,8 @@
 def fibonacci(n):
+    if not isinstance(n, int):
+        return -1
     if n <= 0:
-        return 0
+        return -1
     elif n == 1:
         return 1
     else:
@@ -11,10 +13,3 @@ def fibonacci(n):
             a = b
             b = result
         return result
-    
-if __name__ == "__main__":
-    print("n=1のとき:", fibonacci(1))
-    print("n=2のとき:", fibonacci(2))
-    print("n=3のとき:", fibonacci(3))
-    print("n=4のとき:", fibonacci(4))
-    print("n=5のとき:", fibonacci(5))
