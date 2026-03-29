@@ -1,7 +1,7 @@
 def fibonacci(n):
-    if not isinstance(n, int):
+    if type(n) is not int:
         return -1
-    if n <= 0:
+    if n <= 0 or n >= 10001:
         return -1
     elif n == 1:
         return 1
