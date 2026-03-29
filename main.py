@@ -1,14 +1,36 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request, HTTPException
+from fastapi.exceptions import RequestValidationError
+from starlette.exceptions import HTTPException as StarletteHTTPException
+from fastapi.responses import JSONResponse
 from fib_calc import fibonacci
 
-# FastAPIの本体（アプリケーション）を作成して、appという変数に入れる
 app = FastAPI()
 
-# 「/fib」というURLにGETリクエスト（通常のアクセス）が来た時のルール
+@app.exception_handler(Exception)
+async def server_exception_handler(request: Request, exc: Exception):
+  return JSONResponse(
+        status_code=500,
+        content={"status": 500, "message": "サーバー内部でエラーが発生しました。"}
+  )
+
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request: Request, exc: RequestValidationError):
+  return JSONResponse(
+    status_code=400,
+    content={"status": 400, "message": "nには整数を指定してください。"}
+  )
+
+@app.exception_handler(StarletteHTTPException)
+async def http_exception_handler(request: Request, exc: StarletteHTTPException):
+  return JSONResponse(
+    status_code=exc.status_code,
+    content={"status": exc.status_code, "message": exc.detail}
+  )
+
 @app.get("/fib")
-def dummy_api(n: int):
-    # 受け取った数字「n」を、そのままJSON形式の辞書で返す
-    return {
-        "message": "Web APIが動きました！",
-        "受け取った数字": fibonacci(n)
-    }
+def get_fibonacci(n: int):
+  if n < 1:
+    raise HTTPException(status_code=400, detail="nは1以上の整数を指定してください。")
+  if n > 10000:
+    raise HTTPException(status_code=400, detail="nは10000以下にしてください。")
+  return {"result": fibonacci(n)}
